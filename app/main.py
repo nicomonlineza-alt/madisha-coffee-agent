@@ -207,7 +207,7 @@ def generate_response(query: str, search_results: dict, memory: dict) -> str:
             p = search_results["products"][0]
             response_parts.append(f"**{p['name']}**")
             response_parts.append(f"📝 {p['description']}")
-            response_parts.append(f"💰 Price: ${p['price']:.2f}")
+            response_parts.append(f"💰 Price: R{p['price']:.2f}")
             if p.get("category"):
                 response_parts.append(f"📁 Category: {p['category']}")
             if p.get("features"):
@@ -220,7 +220,7 @@ def generate_response(query: str, search_results: dict, memory: dict) -> str:
             response_parts.append("Here are some products that might interest you:")
             for p in search_results["products"][:5]:
                 stock_emoji = "✅" if p.get("in_stock", True) else "❌"
-                response_parts.append(f"• **{p['name']}** - ${p['price']:.2f} {stock_emoji}")
+                response_parts.append(f"• **{p['name']}** - R{p['price']:.2f} {stock_emoji}")
 
     # Check for FAQ matches
     if search_results["faqs"]:

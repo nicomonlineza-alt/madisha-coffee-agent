@@ -763,7 +763,7 @@
                     </div>
                     <p class="item-content">${escapeHtml(p.description)}</p>
                     <div class="item-meta">
-                        <span class="meta-tag price">$${p.price.toFixed(2)}</span>
+                        <span class="meta-tag price">R${p.price.toFixed(2)}</span>
                         ${p.category ? `<span class="meta-tag">${escapeHtml(p.category)}</span>` : ''}
                         <span class="meta-tag ${p.in_stock !== false ? 'stock' : 'out-of-stock'}">${p.in_stock !== false ? 'In Stock' : 'Out of Stock'}</span>
                     </div>
