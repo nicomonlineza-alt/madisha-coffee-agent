@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - E-commerce Support Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #64748b;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .panel {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            color: #1e293b;
+        }
+
+        .add-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            transition: box-shadow 0.2s;
+        }
+
+        .item-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .item-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
+        }
+
+        .item-btn:hover {
+            opacity: 0.8;
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .item-content {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .item-meta {
+            margin-top: 12px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            padding: 4px 10px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .meta-tag.price {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .meta-tag.stock {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .meta-tag.out-of-stock {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: #1e293b;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-checkbox input {
+            width: 20px;
+            height: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Store Info Panel */
+        .store-info-form {
+            max-width: 600px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: #1e293b;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #16a34a;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚙️ Admin Panel - Knowledge Base Manager</h1>
+        <div class="header-actions">
+            <button class="header-btn" onclick="exportMemory()">📥 Export Data</button>
+            <button class="header-btn" onclick="document.getElementById('importFile').click()">📤 Import Data</button>
+            <input type="file" id="importFile" accept=".json" style="display: none" onchange="importMemory(event)">
+            <a href="/" class="header-btn">💬 Chat Interface</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showPanel('products')">🛍️ Products</button>
+            <button class="tab" onclick="showPanel('faqs')">❓ FAQs</button>
+            <button class="tab" onclick="showPanel('policies')">📋 Policies</button>
+            <button class="tab" onclick="showPanel('knowledge')">📚 Custom Knowledge</button>
+            <button class="tab" onclick="showPanel('store')">🏪 Store Info</button>
+        </div>
+
+        <!-- Products Panel -->
+        <div class="panel active" id="products-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Products</h2>
+                <button class="add-btn" onclick="openModal('product')">+ Add Product</button>
+            </div>
+            <div class="items-grid" id="products-list"></div>
+        </div>
+
+        <!-- FAQs Panel -->
+        <div class="panel" id="faqs-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Frequently Asked Questions</h2>
+                <button class="add-btn" onclick="openModal('faq')">+ Add FAQ</button>
+            </div>
+            <div class="items-grid" id="faqs-list"></div>
+        </div>
+
+        <!-- Policies Panel -->
+        <div class="panel" id="policies-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Store Policies</h2>
+                <button class="add-btn" onclick="openModal('policy')">+ Add Policy</button>
+            </div>
+            <div class="items-grid" id="policies-list"></div>
+        </div>
+
+        <!-- Custom Knowledge Panel -->
+        <div class="panel" id="knowledge-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Custom Knowledge</h2>
+                <button class="add-btn" onclick="openModal('knowledge')">+ Add Knowledge</button>
+            </div>
+            <div class="items-grid" id="knowledge-list"></div>
+        </div>
+
+        <!-- Store Info Panel -->
+        <div class="panel" id="store-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Store Information</h2>
+            </div>
+            <form class="store-info-form" onsubmit="saveStoreInfo(event)">
+                <div class="form-group">
+                    <label class="form-label">Store Name</label>
+                    <input type="text" class="form-input" id="store-name" placeholder="My E-commerce Store">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="store-description" placeholder="Welcome to our online store!"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Email</label>
+                    <input type="email" class="form-input" id="store-email" placeholder="support@store.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Phone</label>
+                    <input type="tel" class="form-input" id="store-phone" placeholder="+1 (555) 123-4567">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="product-modal-title">Add Product</h3>
+                <button class="close-btn" onclick="closeModal('product')">&times;</button>
+            </div>
+            <form onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label class="form-label">Product Name *</label>
+                    <input type="text" class="form-input" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description *</label>
+                    <textarea class="form-textarea" id="product-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price *</label>
+                    <input type="number" class="form-input" id="product-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <input type="text" class="form-input" id="product-category" placeholder="e.g., Electronics, Clothing">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Features (one per line)</label>
+                    <textarea class="form-textarea" id="product-features" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="product-stock" checked>
+                        <span>In Stock</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('product')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div class="modal" id="faq-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="faq-modal-title">Add FAQ</h3>
+                <button class="close-btn" onclick="closeModal('faq')">&times;</button>
+            </div>
+            <form onsubmit="saveFaq(event)">
+                <input type="hidden" id="faq-id">
+                <div class="form-group">
+                    <label class="form-label">Question *</label>
+                    <input type="text" class="form-input" id="faq-question" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Answer *</label>
+                    <textarea class="form-textarea" id="faq-answer" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <input type="text" class="form-input" id="faq-category" placeholder="e.g., Shipping, Payment">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('faq')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save FAQ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Policy Modal -->
+    <div class="modal" id="policy-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="policy-modal-title">Add Policy</h3>
+                <button class="close-btn" onclick="closeModal('policy')">&times;</button>
+            </div>
+            <form onsubmit="savePolicy(event)">
+                <input type="hidden" id="policy-id">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="policy-title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content *</label>
+                    <textarea class="form-textarea" id="policy-content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="policy-type">
+                        <option value="general">General</option>
+                        <option value="shipping">Shipping</option>
+                        <option value="returns">Returns</option>
+                        <option value="privacy">Privacy</option>
+                        <option value="terms">Terms of Service</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('policy')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Policy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Knowledge Modal -->
+    <div class="modal" id="knowledge-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="knowledge-modal-title">Add Knowledge</h3>
+                <button class="close-btn" onclick="closeModal('knowledge')">&times;</button>
+            </div>
+            <form onsubmit="saveKnowledge(event)">
+                <input type="hidden" id="knowledge-id">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="knowledge-title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content *</label>
+                    <textarea class="form-textarea" id="knowledge-content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Keywords (comma separated)</label>
+                    <input type="text" class="form-input" id="knowledge-keywords" placeholder="keyword1, keyword2, keyword3">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('knowledge')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Knowledge</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Show panel
+        function showPanel(panelName) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${panelName}-panel`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Modal functions
+        function openModal(type, data = null) {
+            const modal = document.getElementById(`${type}-modal`);
+            const title = document.getElementById(`${type}-modal-title`);
+            
+            if (data) {
+                title.textContent = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                populateForm(type, data);
+            } else {
+                title.textContent = `Add ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                clearForm(type);
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeModal(type) {
+            document.getElementById(`${type}-modal`).classList.remove('show');
+        }
+
+        function clearForm(type) {
+            if (type === 'product') {
+                document.getElementById('product-id').value = '';
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-description').value = '';
+                document.getElementById('product-price').value = '';
+                document.getElementById('product-category').value = '';
+                document.getElementById('product-features').value = '';
+                document.getElementById('product-stock').checked = true;
+            } else if (type === 'faq') {
+                document.getElementById('faq-id').value = '';
+                document.getElementById('faq-question').value = '';
+                document.getElementById('faq-answer').value = '';
+                document.getElementById('faq-category').value = '';
+            } else if (type === 'policy') {
+                document.getElementById('policy-id').value = '';
+                document.getElementById('policy-title').value = '';
+                document.getElementById('policy-content').value = '';
+                document.getElementById('policy-type').value = 'general';
+            } else if (type === 'knowledge') {
+                document.getElementById('knowledge-id').value = '';
+                document.getElementById('knowledge-title').value = '';
+                document.getElementById('knowledge-content').value = '';
+                document.getElementById('knowledge-keywords').value = '';
+            }
+        }
+
+        function populateForm(type, data) {
+            if (type === 'product') {
+                document.getElementById('product-id').value = data.id;
+                document.getElementById('product-name').value = data.name;
+                document.getElementById('product-description').value = data.description;
+                document.getElementById('product-price').value = data.price;
+                document.getElementById('product-category').value = data.category || '';
+                document.getElementById('product-features').value = (data.features || []).join('\n');
+                document.getElementById('product-stock').checked = data.in_stock !== false;
+            } else if (type === 'faq') {
+                document.getElementById('faq-id').value = data.id;
+                document.getElementById('faq-question').value = data.question;
+                document.getElementById('faq-answer').value = data.answer;
+                document.getElementById('faq-category').value = data.category || '';
+            } else if (type === 'policy') {
+                document.getElementById('policy-id').value = data.id;
+                document.getElementById('policy-title').value = data.title;
+                document.getElementById('policy-content').value = data.content;
+                document.getElementById('policy-type').value = data.type || 'general';
+            } else if (type === 'knowledge') {
+                document.getElementById('knowledge-id').value = data.id;
+                document.getElementById('knowledge-title').value = data.title;
+                document.getElementById('knowledge-content').value = data.content;
+                document.getElementById('knowledge-keywords').value = (data.keywords || []).join(', ');
+            }
+        }
+
+        // API functions
+        async function loadProducts() {
+            const response = await fetch('/api/products');
+            const products = await response.json();
+            renderProducts(products);
+        }
+
+        async function loadFaqs() {
+            const response = await fetch('/api/faqs');
+            const faqs = await response.json();
+            renderFaqs(faqs);
+        }
+
+        async function loadPolicies() {
+            const response = await fetch('/api/policies');
+            const policies = await response.json();
+            renderPolicies(policies);
+        }
+
+        async function loadKnowledge() {
+            const response = await fetch('/api/knowledge');
+            const knowledge = await response.json();
+            renderKnowledge(knowledge);
+        }
+
+        async function loadStoreInfo() {
+            const response = await fetch('/api/store-info');
+            const info = await response.json();
+            document.getElementById('store-name').value = info.name || '';
+            document.getElementById('store-description').value = info.description || '';
+            document.getElementById('store-email').value = info.contact_email || '';
+            document.getElementById('store-phone').value = info.contact_phone || '';
+        }
+
+        // Render functions
+        function renderProducts(products) {
+            const container = document.getElementById('products-list');
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🛍️</div>
+                        <p class="empty-state-text">No products yet. Add your first product!</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = products.map(p => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3 class="item-title">${escapeHtml(p.name)}</h3>
+                        <div class="item-actions">
+                            <button class="item-btn edit-btn" onclick='openModal("product", ${JSON.stringify(p)})'>Edit</button>
+                            <button class="item-btn delete-btn" onclick="deleteProduct('${p.id}')">Delete</button>
+                        </div>
+                    </div>
+                    <p class="item-content">${escapeHtml(p.description)}</p>
+                    <div class="item-meta">
+                        <span class="meta-tag price">$${p.price.toFixed(2)}</span>
+                        ${p.category ? `<span class="meta-tag">${escapeHtml(p.category)}</span>` : ''}
+                        <span class="meta-tag ${p.in_stock !== false ? 'stock' : 'out-of-stock'}">${p.in_stock !== false ? 'In Stock' : 'Out of Stock'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFaqs(faqs) {
+            const container = document.getElementById('faqs-list');
+            if (faqs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❓</div>
+                        <p class="empty-state-text">No FAQs yet. Add your first FAQ!</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = faqs.map(f => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3 class="item-title">${escapeHtml(f.question)}</h3>
+                        <div class="item-actions">
+                            <button class="item-btn edit-btn" onclick='openModal("faq", ${JSON.stringify(f)})'>Edit</button>
+                            <button class="item-btn delete-btn" onclick="deleteFaq('${f.id}')">Delete</button>
+                        </div>
+                    </div>
+                    <p class="item-content">${escapeHtml(f.answer)}</p>
+                    ${f.category ? `<div class="item-meta"><span class="meta-tag">${escapeHtml(f.category)}</span></div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderPolicies(policies) {
+            const container = document.getElementById('policies-list');
+            if (policies.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p class="empty-state-text">No policies yet. Add your first policy!</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = policies.map(p => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3 class="item-title">${escapeHtml(p.title)}</h3>
+                        <div class="item-actions">
+                            <button class="item-btn edit-btn" onclick='openModal("policy", ${JSON.stringify(p)})'>Edit</button>
+                            <button class="item-btn delete-btn" onclick="deletePolicy('${p.id}')">Delete</button>
+                        </div>
+                    </div>
+                    <p class="item-content">${escapeHtml(p.content)}</p>
+                    <div class="item-meta"><span class="meta-tag">${escapeHtml(p.type || 'general')}</span></div>
+                </div>
+            `).join('');
+        }
+
+        function renderKnowledge(knowledge) {
+            const container = document.getElementById('knowledge-list');
+            if (knowledge.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p class="empty-state-text">No custom knowledge yet. Add your first entry!</p>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = knowledge.map(k => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3 class="item-title">${escapeHtml(k.title)}</h3>
+                        <div class="item-actions">
+                            <button class="item-btn edit-btn" onclick='openModal("knowledge", ${JSON.stringify(k)})'>Edit</button>
+                            <button class="item-btn delete-btn" onclick="deleteKnowledge('${k.id}')">Delete</button>
+                        </div>
+                    </div>
+                    <p class="item-content">${escapeHtml(k.content)}</p>
+                    ${k.keywords && k.keywords.length ? `<div class="item-meta">${k.keywords.map(kw => `<span class="meta-tag">${escapeHtml(kw)}</span>`).join('')}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Save functions
+        async function saveProduct(event) {
+            event.preventDefault();
+            const id = document.getElementById('product-id').value;
+            const data = {
+                name: document.getElementById('product-name').value,
+                description: document.getElementById('product-description').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                category: document.getElementById('product-category').value,
+                features: document.getElementById('product-features').value.split('\n').filter(f => f.trim()),
+                in_stock: document.getElementById('product-stock').checked
+            };
+
+            const url = id ? `/api/products/${id}` : '/api/products';
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            closeModal('product');
+            loadProducts();
+            showToast('Product saved successfully!');
+        }
+
+        async function saveFaq(event) {
+            event.preventDefault();
+            const id = document.getElementById('faq-id').value;
+            const data = {
+                question: document.getElementById('faq-question').value,
+                answer: document.getElementById('faq-answer').value,
+                category: document.getElementById('faq-category').value
+            };
+
+            const url = id ? `/api/faqs/${id}` : '/api/faqs';
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            closeModal('faq');
+            loadFaqs();
+            showToast('FAQ saved successfully!');
+        }
+
+        async function savePolicy(event) {
+            event.preventDefault();
+            const id = document.getElementById('policy-id').value;
+            const data = {
+                title: document.getElementById('policy-title').value,
+                content: document.getElementById('policy-content').value,
+                type: document.getElementById('policy-type').value
+            };
+
+            const url = id ? `/api/policies/${id}` : '/api/policies';
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            closeModal('policy');
+            loadPolicies();
+            showToast('Policy saved successfully!');
+        }
+
+        async function saveKnowledge(event) {
+            event.preventDefault();
+            const id = document.getElementById('knowledge-id').value;
+            const data = {
+                title: document.getElementById('knowledge-title').value,
+                content: document.getElementById('knowledge-content').value,
+                keywords: document.getElementById('knowledge-keywords').value.split(',').map(k => k.trim()).filter(k => k)
+            };
+
+            const url = id ? `/api/knowledge/${id}` : '/api/knowledge';
+            const method = id ? 'PUT' : 'POST';
+
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            closeModal('knowledge');
+            loadKnowledge();
+            showToast('Knowledge saved successfully!');
+        }
+
+        async function saveStoreInfo(event) {
+            event.preventDefault();
+            const data = {
+                name: document.getElementById('store-name').value,
+                description: document.getElementById('store-description').value,
+                contact_email: document.getElementById('store-email').value,
+                contact_phone: document.getElementById('store-phone').value
+            };
+
+            await fetch('/api/store-info', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            showToast('Store info saved successfully!');
+        }
+
+        // Delete functions
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            loadProducts();
+            showToast('Product deleted!');
+        }
+
+        async function deleteFaq(id) {
+            if (!confirm('Are you sure you want to delete this FAQ?')) return;
+            await fetch(`/api/faqs/${id}`, { method: 'DELETE' });
+            loadFaqs();
+            showToast('FAQ deleted!');
+        }
+
+        async function deletePolicy(id) {
+            if (!confirm('Are you sure you want to delete this policy?')) return;
+            await fetch(`/api/policies/${id}`, { method: 'DELETE' });
+            loadPolicies();
+            showToast('Policy deleted!');
+        }
+
+        async function deleteKnowledge(id) {
+            if (!confirm('Are you sure you want to delete this knowledge entry?')) return;
+            await fetch(`/api/knowledge/${id}`, { method: 'DELETE' });
+            loadKnowledge();
+            showToast('Knowledge entry deleted!');
+        }
+
+        // Export/Import
+        async function exportMemory() {
+            const response = await fetch('/api/memory/export');
+            const data = await response.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'knowledge-base-export.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported successfully!');
+        }
+
+        async function importMemory(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    await fetch('/api/memory/import', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    loadAll();
+                    showToast('Data imported successfully!');
+                } catch (error) {
+                    showToast('Error importing data. Please check the file format.', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Utility
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load all data
+        function loadAll() {
+            loadProducts();
+            loadFaqs();
+            loadPolicies();
+            loadKnowledge();
+            loadStoreInfo();
+        }
+
+        // Initialize
+        loadAll();
+    </script>
+</body>
+</html>
