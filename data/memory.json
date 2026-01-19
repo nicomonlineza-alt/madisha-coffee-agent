@@ -5,7 +5,7 @@
       "name": "Madisha Bold Blen 250g",
       "description": "To the palates of coffee lovers around the world, it may just have the perfect balance of brightness and body, with a flavor that is \u201cpure coffee\u201d.",
       "price": 200.0,
-      "category": "Coffee",
+      "category": "coffee",
       "features": [
         "250g"
       ],
@@ -16,6 +16,28 @@
       "name": "Madisha Bold Blen 1kg",
       "description": "To the palates of coffee lovers around the world, it may just have the perfect balance of brightness and body, with a flavor that is \u201cpure coffee\u201d",
       "price": 399.0,
+      "category": "coffee",
+      "features": [
+        "1kg"
+      ],
+      "in_stock": true
+    },
+    {
+      "id": "20260119120244171184",
+      "name": "Madisha Aroma de Braganca 250g",
+      "description": "Magnificent Madisha Aroma de Braganca Original Coffee Beans is a premium coffee with a velvety texture and subtly balanced flavours, the Aroma de Braganca creates an excellent experience for every occasion.",
+      "price": 250.0,
+      "category": "coffee",
+      "features": [
+        "250g"
+      ],
+      "in_stock": true
+    },
+    {
+      "id": "20260119120336816600",
+      "name": "Madisha Aroma de Braganca 1kg",
+      "description": "Magnificent Madisha Aroma de Braganca Original Coffee Beans is a premium coffee with a velvety texture and subtly balanced flavours, the Aroma de Braganca creates an excellent experience for every occasion.",
+      "price": 450.0,
       "category": "coffee",
       "features": [
         "1kg"
@@ -53,9 +75,9 @@
   ],
   "custom_knowledge": [],
   "store_info": {
-    "name": "My E-commerce Store",
-    "description": "Welcome to our online store!",
-    "contact_email": "support@store.com",
-    "contact_phone": ""
+    "name": "Madisha Coffee",
+    "description": "We sell premium coffee.",
+    "contact_email": "info@madishacoffee.co.za",
+    "contact_phone": "+27732336222"
   }
 }
